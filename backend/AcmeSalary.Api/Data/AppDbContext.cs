@@ -28,6 +28,9 @@ public class AppDbContext : DbContext
         {
             entity.HasKey(x => x.Id);
 
+            entity.Property(x => x.Id)
+                .ValueGeneratedOnAdd();
+
             entity.Property(x => x.Name)
                 .IsRequired()
                 .HasMaxLength(100);
@@ -48,6 +51,9 @@ public class AppDbContext : DbContext
         {
             entity.HasKey(x => x.Id);
 
+            entity.Property(x => x.Id)
+                .ValueGeneratedOnAdd();
+
             entity.Property(x => x.Name)
                 .IsRequired()
                 .HasMaxLength(100);
@@ -59,6 +65,9 @@ public class AppDbContext : DbContext
         modelBuilder.Entity<Employee>(entity =>
         {
             entity.HasKey(x => x.Id);
+
+            entity.Property(x => x.Id)
+                .ValueGeneratedOnAdd();
 
             entity.Property(x => x.EmployeeCode)
                 .IsRequired()
@@ -111,6 +120,9 @@ public class AppDbContext : DbContext
         {
             entity.HasKey(x => x.Id);
 
+            entity.Property(x => x.Id)
+                .ValueGeneratedOnAdd();
+
             entity.Property(x => x.BaseSalary)
                 .HasPrecision(18, 2);
 
@@ -137,6 +149,9 @@ public class AppDbContext : DbContext
         modelBuilder.Entity<SalaryAudit>(entity =>
         {
             entity.HasKey(x => x.Id);
+
+            entity.Property(x => x.Id)
+                .ValueGeneratedOnAdd();
 
             entity.Property(x => x.PreviousSalary)
                 .HasPrecision(18, 2);
