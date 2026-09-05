@@ -1,0 +1,15 @@
+namespace AcmeSalary.Api.DTOs;
+
+public class EmployeeListItemDto
+{
+    public int Id { get; set; }
+    public string EmployeeCode { get; set; } = string.Empty;
+    public string FullName { get; set; } = string.Empty;
+    public string Email { get; set; } = string.Empty;
+    public string Country { get; set; } = string.Empty;
+    public string CurrencyCode { get; set; } = string.Empty;
+    public string Department { get; set; } = string.Empty;
+    public string JobTitle { get; set; } = string.Empty;
+    public string EmploymentStatus { get; set; } = string.Empty;
+    public DateTime HireDate { get; set; }
+}
