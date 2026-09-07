@@ -9,7 +9,10 @@ builder.Services.AddCors(options =>
 {
     options.AddPolicy("ReactApp", policy =>
     {
-        policy.WithOrigins("http://localhost:5173")
+        policy.WithOrigins(
+                "http://localhost:5173",
+                "https://acme-salary-management-hfgm.onrender.com"
+              )
               .AllowAnyHeader()
               .AllowAnyMethod();
     });
@@ -55,9 +58,9 @@ using (var scope = app.Services.CreateScope())
 
     await dbContext.Database.MigrateAsync();
 
-    // PostgreSQL requires identity generation for integer primary keys.
     if (connectionString!.StartsWith("Host=", StringComparison.OrdinalIgnoreCase))
     {
+        // PostgreSQL requires identity generation for integer primary keys.
         await dbContext.Database.ExecuteSqlRawAsync("""
             DO $$
             BEGIN
@@ -129,9 +132,114 @@ using (var scope = app.Services.CreateScope())
             $$;
         """);
 
+        // The original SQLite migrations created DateTime columns as TEXT.
+        // Convert those existing PostgreSQL columns to timestamp with time zone.
+        await dbContext.Database.ExecuteSqlRawAsync("""
+            DO $$
+            BEGIN
+                IF EXISTS (
+                    SELECT 1
+                    FROM information_schema.columns
+                    WHERE table_schema = 'public'
+                      AND table_name = 'Employees'
+                      AND column_name = 'HireDate'
+                      AND data_type = 'text'
+                ) THEN
+                    ALTER TABLE "Employees"
+                    ALTER COLUMN "HireDate"
+                    TYPE timestamp with time zone
+                    USING NULLIF("HireDate", '')::timestamp with time zone;
+                END IF;
+
+                IF EXISTS (
+                    SELECT 1
+                    FROM information_schema.columns
+                    WHERE table_schema = 'public'
+                      AND table_name = 'Employees'
+                      AND column_name = 'CreatedAt'
+                      AND data_type = 'text'
+                ) THEN
+                    ALTER TABLE "Employees"
+                    ALTER COLUMN "CreatedAt"
+                    TYPE timestamp with time zone
+                    USING NULLIF("CreatedAt", '')::timestamp with time zone;
+                END IF;
+
+                IF EXISTS (
+                    SELECT 1
+                    FROM information_schema.columns
+                    WHERE table_schema = 'public'
+                      AND table_name = 'Employees'
+                      AND column_name = 'UpdatedAt'
+                      AND data_type = 'text'
+                ) THEN
+                    ALTER TABLE "Employees"
+                    ALTER COLUMN "UpdatedAt"
+                    TYPE timestamp with time zone
+                    USING NULLIF("UpdatedAt", '')::timestamp with time zone;
+                END IF;
+
+                IF EXISTS (
+                    SELECT 1
+                    FROM information_schema.columns
+                    WHERE table_schema = 'public'
+                      AND table_name = 'Salaries'
+                      AND column_name = 'EffectiveFrom'
+                      AND data_type = 'text'
+                ) THEN
+                    ALTER TABLE "Salaries"
+                    ALTER COLUMN "EffectiveFrom"
+                    TYPE timestamp with time zone
+                    USING NULLIF("EffectiveFrom", '')::timestamp with time zone;
+                END IF;
+
+                IF EXISTS (
+                    SELECT 1
+                    FROM information_schema.columns
+                    WHERE table_schema = 'public'
+                      AND table_name = 'Salaries'
+                      AND column_name = 'EffectiveTo'
+                      AND data_type = 'text'
+                ) THEN
+                    ALTER TABLE "Salaries"
+                    ALTER COLUMN "EffectiveTo"
+                    TYPE timestamp with time zone
+                    USING NULLIF("EffectiveTo", '')::timestamp with time zone;
+                END IF;
+
+                IF EXISTS (
+                    SELECT 1
+                    FROM information_schema.columns
+                    WHERE table_schema = 'public'
+                      AND table_name = 'Salaries'
+                      AND column_name = 'CreatedAt'
+                      AND data_type = 'text'
+                ) THEN
+                    ALTER TABLE "Salaries"
+                    ALTER COLUMN "CreatedAt"
+                    TYPE timestamp with time zone
+                    USING NULLIF("CreatedAt", '')::timestamp with time zone;
+                END IF;
+
+                IF EXISTS (
+                    SELECT 1
+                    FROM information_schema.columns
+                    WHERE table_schema = 'public'
+                      AND table_name = 'SalaryAudits'
+                      AND column_name = 'ChangedAt'
+                      AND data_type = 'text'
+                ) THEN
+                    ALTER TABLE "SalaryAudits"
+                    ALTER COLUMN "ChangedAt"
+                    TYPE timestamp with time zone
+                    USING NULLIF("ChangedAt", '')::timestamp with time zone;
+                END IF;
+            END
+            $$;
+        """);
+
         // If the previous deployment failed during seeding,
         // Countries/Departments may already exist while Employees are empty.
-        // Remove the incomplete seed so it can start cleanly.
         var employeeCount = await dbContext.Employees.CountAsync();
 
         if (employeeCount == 0)
