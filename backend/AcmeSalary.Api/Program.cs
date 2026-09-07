@@ -56,8 +56,6 @@ using (var scope = app.Services.CreateScope())
     await dbContext.Database.MigrateAsync();
 
     // PostgreSQL requires identity generation for integer primary keys.
-    // This is required because the existing migrations were originally
-    // created using SQLite.
     if (connectionString!.StartsWith("Host=", StringComparison.OrdinalIgnoreCase))
     {
         await dbContext.Database.ExecuteSqlRawAsync("""
@@ -130,6 +128,22 @@ using (var scope = app.Services.CreateScope())
             END
             $$;
         """);
+
+        // If the previous deployment failed during seeding,
+        // Countries/Departments may already exist while Employees are empty.
+        // Remove the incomplete seed so it can start cleanly.
+        var employeeCount = await dbContext.Employees.CountAsync();
+
+        if (employeeCount == 0)
+        {
+            await dbContext.Database.ExecuteSqlRawAsync("""
+                DELETE FROM "SalaryAudits";
+                DELETE FROM "Salaries";
+                DELETE FROM "Employees";
+                DELETE FROM "Countries";
+                DELETE FROM "Departments";
+            """);
+        }
     }
 
     await DbSeeder.SeedAsync(dbContext);
