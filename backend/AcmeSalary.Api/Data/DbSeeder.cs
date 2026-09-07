@@ -84,7 +84,8 @@ public static class DbSeeder
         var employees = new List<Employee>(10000);
         var salaries = new List<Salary>(10000);
 
-        var baseDate = new DateTime(2026, 1, 1);
+        // PostgreSQL timestamp with time zone requires UTC DateTime values.
+        var baseDate = new DateTime(2026, 1, 1, 0, 0, 0, DateTimeKind.Utc);
 
         for (var i = 1; i <= 10000; i++)
         {
@@ -147,7 +148,9 @@ public static class DbSeeder
                 baseSalary = random.Next(55000, 160000);
             }
 
-            var bonus = Math.Round(baseSalary * (decimal)(random.Next(5, 21) / 100.0), 2);
+            var bonus = Math.Round(
+                baseSalary * (decimal)(random.Next(5, 21) / 100.0),
+                2);
 
             salaries.Add(new Salary
             {
@@ -155,7 +158,10 @@ public static class DbSeeder
                 BaseSalary = baseSalary,
                 Bonus = bonus,
                 CurrencyCode = country.CurrencyCode,
-                EffectiveFrom = new DateTime(2026, 1, 1),
+
+                // Explicitly UTC for PostgreSQL timestamp with time zone.
+                EffectiveFrom = baseDate,
+
                 EffectiveTo = null,
                 ChangeReason = "Initial salary",
                 CreatedAt = baseDate
