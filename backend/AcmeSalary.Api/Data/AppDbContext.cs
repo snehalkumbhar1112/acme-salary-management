@@ -29,7 +29,7 @@ public class AppDbContext : DbContext
             entity.HasKey(x => x.Id);
 
             entity.Property(x => x.Id)
-                .ValueGeneratedOnAdd();
+                .UseIdentityByDefaultColumn();
 
             entity.Property(x => x.Name)
                 .IsRequired()
@@ -52,7 +52,7 @@ public class AppDbContext : DbContext
             entity.HasKey(x => x.Id);
 
             entity.Property(x => x.Id)
-                .ValueGeneratedOnAdd();
+                .UseIdentityByDefaultColumn();
 
             entity.Property(x => x.Name)
                 .IsRequired()
@@ -67,7 +67,7 @@ public class AppDbContext : DbContext
             entity.HasKey(x => x.Id);
 
             entity.Property(x => x.Id)
-                .ValueGeneratedOnAdd();
+                .UseIdentityByDefaultColumn();
 
             entity.Property(x => x.EmployeeCode)
                 .IsRequired()
@@ -121,7 +121,7 @@ public class AppDbContext : DbContext
             entity.HasKey(x => x.Id);
 
             entity.Property(x => x.Id)
-                .ValueGeneratedOnAdd();
+                .UseIdentityByDefaultColumn();
 
             entity.Property(x => x.BaseSalary)
                 .HasPrecision(18, 2);
@@ -151,7 +151,7 @@ public class AppDbContext : DbContext
             entity.HasKey(x => x.Id);
 
             entity.Property(x => x.Id)
-                .ValueGeneratedOnAdd();
+                .UseIdentityByDefaultColumn();
 
             entity.Property(x => x.PreviousSalary)
                 .HasPrecision(18, 2);
