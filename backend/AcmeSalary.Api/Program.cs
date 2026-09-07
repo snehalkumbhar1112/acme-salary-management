@@ -9,10 +9,10 @@ builder.Services.AddCors(options =>
 {
     options.AddPolicy("ReactApp", policy =>
     {
-        policy.WithOrigins(
-                "http://localhost:5173",
-                "https://acme-salary-management-hfgm.onrender.com"
-              )
+       policy.WithOrigins(
+    "http://localhost:5173",
+    "https://acme-salary-management-1.onrender.com"
+)
               .AllowAnyHeader()
               .AllowAnyMethod();
     });
