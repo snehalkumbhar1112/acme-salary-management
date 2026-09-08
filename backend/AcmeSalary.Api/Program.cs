@@ -230,6 +230,61 @@ using (var scope = app.Services.CreateScope())
                     TYPE timestamp with time zone
                     USING NULLIF("ChangedAt", '')::timestamp with time zone;
                 END IF;
+                                IF EXISTS (
+                    SELECT 1
+                    FROM information_schema.columns
+                    WHERE table_schema = 'public'
+                      AND table_name = 'SalaryAudits'
+                      AND column_name = 'PreviousSalary'
+                      AND data_type = 'text'
+                ) THEN
+                    ALTER TABLE "SalaryAudits"
+                    ALTER COLUMN "PreviousSalary"
+                    TYPE numeric
+                    USING NULLIF("PreviousSalary", '')::numeric;
+                END IF;
+
+                IF EXISTS (
+                    SELECT 1
+                    FROM information_schema.columns
+                    WHERE table_schema = 'public'
+                      AND table_name = 'SalaryAudits'
+                      AND column_name = 'NewSalary'
+                      AND data_type = 'text'
+                ) THEN
+                    ALTER TABLE "SalaryAudits"
+                    ALTER COLUMN "NewSalary"
+                    TYPE numeric
+                    USING NULLIF("NewSalary", '')::numeric;
+                END IF;
+
+                IF EXISTS (
+                    SELECT 1
+                    FROM information_schema.columns
+                    WHERE table_schema = 'public'
+                      AND table_name = 'SalaryAudits'
+                      AND column_name = 'PreviousBonus'
+                      AND data_type = 'text'
+                ) THEN
+                    ALTER TABLE "SalaryAudits"
+                    ALTER COLUMN "PreviousBonus"
+                    TYPE numeric
+                    USING NULLIF("PreviousBonus", '')::numeric;
+                END IF;
+
+                IF EXISTS (
+                    SELECT 1
+                    FROM information_schema.columns
+                    WHERE table_schema = 'public'
+                      AND table_name = 'SalaryAudits'
+                      AND column_name = 'NewBonus'
+                      AND data_type = 'text'
+                ) THEN
+                    ALTER TABLE "SalaryAudits"
+                    ALTER COLUMN "NewBonus"
+                    TYPE numeric
+                    USING NULLIF("NewBonus", '')::numeric;
+                END IF;
             END
             $$;
         """);
