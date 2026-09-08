@@ -229,6 +229,9 @@ public async Task<ActionResult<SalaryResponseDto>> UpdateSalary(
             message = "EffectiveFrom is required."
         });
     }
+    request.EffectiveFrom = DateTime.SpecifyKind(
+    request.EffectiveFrom,
+    DateTimeKind.Utc);
 
     // 3. Check employee exists
     var employee = await _context.Employees
